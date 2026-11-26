@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { BrowserBleTransport } from '../../../core/transports/webBluetooth.ts';
+import { shouldShowComlinkMessage } from '../../../app/navigation/comlink.ts';
 
 function deferred<T = void>() {
     let resolve!: (value: T | PromiseLike<T>) => void;
@@ -92,6 +93,42 @@ test('browser STOP interrupts the remaining chunks of an active ordinary write',
     await rejected;
     await stop;
     assert.deepEqual(f.writes, [new Array(20).fill(1), [9]]);
+    await f.transport.disconnect();
+});
+
+test('STOP cancellation rejects the command without a Comlink error or disconnect', async () => {
+    const f = await fixture();
+    const gate = f.hold('write');
+    const notes: string[] = [];
+    const notify = (text: string) => {
+        if (shouldShowComlinkMessage(text)) notes.push(text);
+    };
+    const write = f.transport.write(f.ref, new Uint8Array(45).fill(1), false);
+    const rejected = assert.rejects(write, error => {
+        notify(String(error));
+        return true;
+    });
+    await gate.started;
+    const stop = f.transport.emergencyWrite(f.ref, [Uint8Array.of(9)]);
+    gate.finish();
+    await rejected;
+    await stop;
+    assert.deepEqual(notes, []);
+    assert.equal(f.connected(), true);
+    await f.transport.write(f.ref, Uint8Array.of(2), true);
+    assert.deepEqual(f.writes, [new Array(20).fill(1), [9], [2]]);
+    assert.equal(shouldShowComlinkMessage(
+        'Error: Operation canceled by emergency STOP or disconnect.', true,
+    ), true, 'an active safety failure must remain visible even with the same error text');
+    for (const message of [
+        'STOP failed: Operation canceled by emergency STOP or disconnect.',
+        'Error: GATT Server is disconnected.',
+        'Error: Command response timed out.',
+        'Light preset saved.',
+    ]) {
+        notify(message);
+        assert.equal(notes.at(-1), message);
+    }
     await f.transport.disconnect();
 });
 

@@ -5,7 +5,8 @@ combine actions into sequences.
 
 ## Install
 
-- [Web controller](web/README.md): run locally in Chrome with Bluetooth.
+- [Web controller](web/README.md): run locally in Chrome with Bluetooth, including
+  [Windows setup](desktop/README.md#windows).
 - [Android app](android/README.md): install a standalone APK on Android 8 or newer.
 - [Home Assistant](https://github.com/swishyswoosh/mech-hacs#installation): install through HACS.
 
@@ -16,7 +17,7 @@ git clone https://github.com/swishyswoosh/mech.git
 cd mech
 ```
 
-The web controller also supports a [macOS Bluetooth bridge](desktop/README.md).
+The web controller also supports a [macOS Bluetooth bridge](desktop/README.md#macos-bluetooth-bridge).
 For a dedicated Linux host, use the [standalone service](service/README.md).
 The Home Assistant panel includes driving and dome controls, while automations
 and the standalone service are limited to sounds and lights. Use Web or Android
