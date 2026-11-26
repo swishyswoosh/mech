@@ -6,15 +6,37 @@ android {
     compileSdk { version = release(37) { minorApiLevel = 2 } }
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
-    defaultConfig { applicationId 'local.r2controller'; minSdk rootProject.ext.minSdkVersion; targetSdk rootProject.ext.targetSdkVersion; versionCode 15; versionName '0.1.0'; manifestPlaceholders = [usesCleartextTraffic: 'false'] }
+    defaultConfig {
+        applicationId 'local.r2controller'
+        minSdk rootProject.ext.minSdkVersion
+        targetSdk rootProject.ext.targetSdkVersion
+        versionCode 16
+        versionName '0.1.1'
+        manifestPlaceholders = [usesCleartextTraffic: 'false']
+        externalNativeBuild {
+            cmake {
+                cppFlags "-ffile-prefix-map=${rootProject.projectDir.parentFile}=.",
+                         "-ffile-prefix-map=${gradle.gradleUserHomeDir}=.gradle"
+                cFlags "-ffile-prefix-map=${rootProject.projectDir.parentFile}=.",
+                       "-ffile-prefix-map=${gradle.gradleUserHomeDir}=.gradle"
+            }
+        }
+    }
     buildFeatures { buildConfig true }
     sourceSets.main.assets.srcDirs = [layout.buildDirectory.dir("generated/hudAssets")]
     buildTypes {
         debug { manifestPlaceholders = [usesCleartextTraffic: 'true'] }
+        release {
+            debuggable false
+            signingConfig null
+            resValue 'string', 'react_native_dev_server_ip', '127.0.0.1'
+            manifestPlaceholders = [usesCleartextTraffic: 'false']
+        }
         offline {
             initWith debug
             debuggable false
             signingConfig signingConfigs.debug
+            resValue 'string', 'react_native_dev_server_ip', '127.0.0.1'
             matchingFallbacks = ['release']
             manifestPlaceholders = [usesCleartextTraffic: 'false']
         }
@@ -25,6 +47,9 @@ dependencies { implementation('com.facebook.react:react-android'); implementatio
 tasks.register('copyHudFonts', Sync) {
  from('src/main/assets') { exclude 'fonts/Inter.ttf', 'fonts/JetBrainsMono.ttf', 'fonts/Rajdhani-SemiBold.ttf' }
  from('../../app/theme/fonts') { include '*.ttf'; into 'fonts' }
+ from('../../app/theme/fonts') { include '*.txt'; into 'licenses/fonts' }
+ from('../..') { include 'LICENSE', 'THIRD_PARTY_NOTICES.md'; into 'licenses' }
+ from('../../licenses') { include '**/*.txt'; into 'licenses' }
  into(layout.buildDirectory.dir('generated/hudAssets'))
 }
 tasks.named('preBuild').configure { dependsOn 'copyHudFonts' }
@@ -63,6 +88,7 @@ tasks.named('preBuild').configure { dependsOn 'verifyApiPolicy' }
 
 // The offline variant inherits debug configuration; require full lint explicitly.
 tasks.matching { it.name == 'assembleOffline' }.configureEach { dependsOn 'lintOffline' }
+tasks.matching { it.name == 'assembleRelease' }.configureEach { dependsOn 'lintRelease' }
 
 // Framework regression sources are supplied by the separate validation repository.
 if (project.hasProperty('controllerRegressionTests')) {

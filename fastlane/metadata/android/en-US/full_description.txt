@@ -1,0 +1,19 @@
+Mech is an independent Bluetooth controller for the Sphero R2-D2 droid.
+It works offline, without an account or an Internet connection.
+
+Use the landscape cockpit to drive with a joystick, turn the dome, select
+a stance and play favorite sounds. Browse the droid's built-in sounds and
+animations, adjust its lights, or run a repeating rainbow effect.
+
+Draw and run paths, save lighting presets and create sequences of actions.
+The cockpit shows live sensor readings, and the Depot provides diagnostics
+and optional battery profiling. Light and dark themes are available.
+
+Switching away from Mech stops active control while retaining the Bluetooth
+connection. Disconnect puts the droid to sleep.
+
+Requires a Sphero R2-D2 droid and Android 8 or newer with Bluetooth Low Energy.
+Android 8–11 require location permission for Bluetooth discovery; Mech does
+not use location data. Android 12 and newer use nearby-device permissions.
+
+Mech is not affiliated with Sphero, Disney or Lucasfilm.

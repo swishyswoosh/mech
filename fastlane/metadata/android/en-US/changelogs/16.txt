@@ -1,0 +1,1 @@
+Standalone offline controller with joystick driving, dome and stance controls, sounds, animations, lights, paths and saved protocols. Includes light and dark themes, live sensors, and clearer STOP recovery messages. Supports Android 8 and newer.

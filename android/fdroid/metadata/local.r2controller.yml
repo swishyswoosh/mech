@@ -1,0 +1,63 @@
+Categories:
+  - Remote Controller
+License: MIT
+AuthorName: swishyswoosh
+SourceCode: https://github.com/swishyswoosh/mech
+IssueTracker: https://github.com/swishyswoosh/mech/issues
+
+AutoName: Mech
+
+RepoType: git
+Repo: https://github.com/swishyswoosh/mech.git
+
+Builds:
+  - versionName: 0.1.1
+    versionCode: 16
+    commit: android-v0.1.1
+    subdir: android
+    sudo:
+      - apt-get update
+      - apt-get install -y openjdk-21-jdk-headless curl xz-utils unzip
+      - curl -Lo /tmp/node.tar.xz https://nodejs.org/dist/v24.22.3/node-v24.22.3-linux-x64.tar.xz
+      - echo '4f2b175a6d53a5c617a80dba2676238a0688cef28c6da4eba35c7d844e66fcfb  /tmp/node.tar.xz'
+        | sha256sum -c -
+      - mkdir -p /opt/node
+      - tar -xJf /tmp/node.tar.xz --strip-components=1 -C /opt/node
+      - rm /tmp/node.tar.xz
+      - ln -sf /opt/node/bin/node /usr/local/bin/node
+      - ln -sf /opt/node/bin/npm /usr/local/bin/npm
+      - ln -sf /opt/node/bin/npx /usr/local/bin/npx
+      - curl -Lo /tmp/gradle.zip https://services.gradle.org/distributions/gradle-9.6.1-bin.zip
+      - echo '9c0f7faeeb306cb14e4279a3e084ca6b596894089a0638e68a07c945a32c9e14  /tmp/gradle.zip'
+        | sha256sum -c -
+      - unzip -qo /tmp/gradle.zip -d /opt
+      - rm /tmp/gradle.zip
+    init:
+      - npm ci
+      - sdkmanager 'platforms;android-37.2' 'platforms;android-37.0' 'build-tools;37.0.0'
+        'build-tools;36.0.0' 'platform-tools' 'cmake;3.22.1'
+    output: app/build/outputs/apk/release/app-release-unsigned.apk
+    rm:
+      - android/gradle/wrapper/gradle-wrapper.jar
+    prebuild:
+      - sed -i '/^ndk.dir=/d' local.properties ../local.properties
+      - sed -i '/jvmToolchain\|JavaVersion/s/17/21/' node_modules/@react-native/gradle-plugin/*/build.gradle.kts
+        node_modules/@react-native/gradle-plugin/react-native-gradle-plugin/src/main/kotlin/com/facebook/react/utils/JdkConfiguratorUtils.kt
+      - sed -i '/mavenLocal()/d; /    maven {/,/    }/d' node_modules/react-native-svg/android/build.gradle
+      - rm -rf node_modules/hermes-compiler/hermesc/osx-bin node_modules/hermes-compiler/hermesc/win64-bin
+        node_modules/react-native-svg/apple
+    scanignore:
+      - android/node_modules/hermes-compiler/hermesc/linux64-bin/hermesc
+    scandelete:
+      - android/node_modules
+    build:
+      - export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+      - export ANDROID_HOME=$$SDK$$
+      - /opt/gradle-9.6.1/bin/gradle :app:assembleRelease --no-daemon --no-watch-fs
+        --console=plain
+    ndk: 27.1.12297006
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags android-v.*
+CurrentVersion: 0.1.1
+CurrentVersionCode: 16

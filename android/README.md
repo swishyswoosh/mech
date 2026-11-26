@@ -29,8 +29,8 @@ a name and choose **Save preset**.
 
 If you switch to another app, Mech stops the activity and keeps Bluetooth
 connected. When you return, wait for stopping to finish before using the
-controls again. If stopping fails, Mech displays an error and keeps the
-controls disabled.
+controls again. If a wheel stop fails, Mech displays an error and blocks driving
+until the stop succeeds. Other controls remain available.
 
 Change theme and input preferences in **Settings**, then choose **Save
 preferences**. You can also enable **Depot** there to access diagnostics and
@@ -38,9 +38,13 @@ battery profiling.
 
 ## Build an APK
 
-To build the app yourself, install Node.js 24 or newer, JDK 17, Android SDK
-Platform 37.2, Build Tools 37.0.0 and NDK 27.1.12297006. Set `JAVA_HOME` and
-`ANDROID_HOME` to your Java and Android SDK installations.
+To build the app yourself, install:
+
+- Node.js 24 or newer, JDK 21 or newer, and a JDK 17 toolchain.
+- Android SDK Platforms 37.0 and 37.2, Build Tools 36.0.0 and 37.0.0,
+  Platform Tools, NDK 27.1.12297006 and CMake 3.22.1.
+
+Set `JAVA_HOME` and `ANDROID_HOME` to your Java and Android SDK installations.
 
 After [cloning Mech](https://github.com/swishyswoosh/mech#install), run these
 commands from its `android` directory:
@@ -51,9 +55,8 @@ npm ci
 ```
 
 The APK is written to `app/build/outputs/apk/offline/app-offline.apk`. This build
-uses a development signing key; distributing an APK requires your own release
-signing setup. See [contributor guidance](../CONTRIBUTING.md) for compatibility
-requirements and tests.
+uses a development signing key. See [contributor guidance](../CONTRIBUTING.md)
+for compatibility requirements and tests.
 
 To install your build over USB, enable USB debugging and authorize the computer
 on the phone, then run:
@@ -65,3 +68,24 @@ adb shell am start -n local.r2controller/.MainActivity
 ```
 
 Use `adb -s SERIAL` to select a device if more than one is attached.
+
+## Unsigned release
+
+For a release without a development signature, run from `android`:
+
+```sh
+npm ci
+./gradlew :app:assembleRelease --no-daemon --console=plain
+```
+
+The output is `app/build/outputs/apk/release/app-release-unsigned.apk`. It includes
+the controller bundle and license notices, disables debugging and requires no
+Internet permission. Release assembly also runs Android lint.
+
+The unsigned APK must be signed before installation. F-Droid builds from source
+and applies its own signing key. An F-Droid build cannot replace an installed
+APK signed with a different key.
+
+The [F-Droid build recipe](fdroid/metadata/local.r2controller.yml) and
+[store listing](../fastlane/metadata/android/en-US/) accompany the source. Mech
+is not yet listed on F-Droid.
