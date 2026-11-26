@@ -129,7 +129,7 @@ public final class R2BleModule extends ReactContextBaseJavaModule implements Lif
   private boolean scanning, closing, emergency;
   private long scanGeneration;
   private byte[] stopFrame;
-  private final SafetyLease lease = new SafetyLease();
+  private final SafetyLease lease = new SafetyLease(SafetyLease.APPLICATION_TIMEOUT_MS);
   private final SafetyLease manualLease = new SafetyLease();
   private final FixedPulseDeadline pulseDeadline = new FixedPulseDeadline();
   private boolean manualInputAllowed = true;
@@ -862,7 +862,7 @@ public final class R2BleModule extends ReactContextBaseJavaModule implements Lif
     emergency = false;
     manualInputAllowed = false;
     if (stopFrame != null && foreground) {
-      lease.arm(SystemClock.elapsedRealtime(), 500);
+      lease.arm(SystemClock.elapsedRealtime(), SafetyLease.APPLICATION_TIMEOUT_MS);
       radio.removeCallbacks(watchdog);
       radio.postDelayed(watchdog, 50);
     }
@@ -1051,7 +1051,7 @@ public final class R2BleModule extends ReactContextBaseJavaModule implements Lif
       foreground = true;
       controlPriority(true);
       if (stopFrame != null && !emergency) {
-        lease.arm(SystemClock.elapsedRealtime(), 500);
+        lease.arm(SystemClock.elapsedRealtime(), SafetyLease.APPLICATION_TIMEOUT_MS);
         radio.removeCallbacks(watchdog);
         radio.postDelayed(watchdog, 50);
       }

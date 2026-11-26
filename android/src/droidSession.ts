@@ -99,7 +99,7 @@ export function createAndroidSession(options: {
       heartbeat = undefined;
     } else if (heartbeat === undefined) {
       native.heartbeat();
-      heartbeat = setInterval(() => native.heartbeat(), 100);
+      heartbeat = setInterval(() => native.heartbeat(), 250);
       (heartbeat as unknown as {unref?: () => void}).unref?.();
     }
   };
@@ -279,7 +279,7 @@ export function createAndroidSession(options: {
         await native.armSafetyStop(
           transport.reference(UUIDS.api).service,
           toBase64(Uint8Array.from(nativeStopFrames(true))),
-          500,
+          5000,
         );
         safety.assertReady();
       },
@@ -292,7 +292,7 @@ export function createAndroidSession(options: {
             await native.armSafetyStop(
               transport.reference(UUIDS.api).service,
               toBase64(Uint8Array.from(stopFrames)),
-              500,
+              5000,
             );
             check();
           },
