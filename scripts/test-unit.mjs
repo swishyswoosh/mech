@@ -1,0 +1,11 @@
+import {readdirSync} from 'node:fs';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+const root=fileURLToPath(new URL('../',import.meta.url));
+const find=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?(e.name.startsWith('.')||e.name==='node_modules'?[]:find(path.join(dir,e.name))):/\.test\.(ts|mjs|js)$/.test(e.name)?[path.join(dir,e.name)]:[]);
+const files=find(path.join(root,'test'));
+if(!files.length)throw Error('No tests discovered');
+const result=spawnSync(process.execPath,['--experimental-strip-types','--test','--test-concurrency=4',...files],{cwd:root,stdio:'inherit'});
+if(result.error)throw result.error;
+process.exitCode=result.status??1;

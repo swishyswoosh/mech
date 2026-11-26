@@ -1,0 +1,20 @@
+{
+  "name": "mech",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node scripts/test-unit.mjs",
+    "test:native": "python3 scripts/test-native.py",
+    "typecheck": "npm --prefix android run typecheck",
+    "build:web": "npm --prefix web run build",
+    "build:android": "npm --prefix android run bundle",
+    "verify": "npm test && npm run test:native && npm run typecheck && npm run build:web && npm run build:android",
+    "typecheck:service": "web/node_modules/.bin/tsc -p service/tsconfig.json",
+    "start:service": "node --experimental-strip-types service/main.ts",
+    "build:remote": "npm --prefix web run build -- --base ./"
+  }
+}

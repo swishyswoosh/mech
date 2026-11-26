@@ -1,0 +1,35 @@
+{
+  "host": "127.0.0.1",
+  "port": 8787,
+  "database": "state/mech.sqlite",
+  "origins": [
+    "http://127.0.0.1:8787"
+  ],
+  "frameAncestors": [],
+  "tokens": [
+    {
+      "id": "home-assistant",
+      "sha256": "REPLACE_WITH_SHA256_OF_RANDOM_TOKEN",
+      "scopes": [
+        "read",
+        "operate",
+        "power",
+        "stop"
+      ],
+      "droids": [
+        "living-room"
+      ]
+    }
+  ],
+  "droids": [
+    {
+      "id": "living-room",
+      "name": "R2",
+      "address": "AA:BB:CC:DD:EE:FF",
+      "automationWake": false,
+      "bluetooth": {
+        "adapter": "hci0"
+      }
+    }
+  ]
+}
