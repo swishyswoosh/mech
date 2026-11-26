@@ -5,10 +5,20 @@ works offline and connects directly to the droid over Bluetooth.
 
 ## Install and connect
 
+Download the signed [Mech 0.1.1 APK](https://github.com/swishyswoosh/mech/releases/download/android-v0.1.1/mech-android-0.1.1.apk)
+from the [Android release](https://github.com/swishyswoosh/mech/releases/tag/android-v0.1.1).
+The release includes a SHA-256 checksum for verifying the download.
+
 Open the APK on the phone, allow installation from your file manager when
 Android asks, and complete the installation prompt. If you are upgrading,
 stop any current activity first; installing an update restarts Mech and
 interrupts its Bluetooth connection.
+
+This is the first GitHub APK signed with Mech's release key. If an existing
+development or F-Droid build uses a different signing key, Android cannot
+install this APK over it. Uninstalling the old app removes its locally saved
+settings, presets and battery history. Later GitHub releases signed with the
+same release key can update this APK in place.
 
 Before connecting, disconnect the droid from any other controller. Open Mech,
 grant its Bluetooth permissions and choose **Find** on the discovery screen,

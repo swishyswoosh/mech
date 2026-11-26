@@ -7,7 +7,8 @@ combine actions into sequences.
 
 - [Web controller](web/README.md): run locally in Chrome with Bluetooth, including
   [Windows setup](desktop/README.md#windows).
-- [Android app](android/README.md): install a standalone APK on Android 8 or newer.
+- [Android APK download](https://github.com/swishyswoosh/mech/releases/download/android-v0.1.1/mech-android-0.1.1.apk):
+  install on Android 8 or newer; see [installation instructions](android/README.md).
 - [Home Assistant](https://github.com/swishyswoosh/mech-hacs#installation): install through HACS.
 
 To build the Web or Android controller, get the source first:
