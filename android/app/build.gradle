@@ -1,0 +1,70 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.facebook.react'
+react { root = file('..'); reactNativeDir = file('../node_modules/react-native'); codegenDir = file('../node_modules/@react-native/codegen'); cliFile = file('../node_modules/react-native/cli.js'); entryFile = file('../index.js'); extraPackagerArgs = ['--max-workers', '2']; autolinkLibrariesWithApp() }
+android {
+    namespace 'local.r2controller'
+    compileSdk { version = release(37) { minorApiLevel = 2 } }
+    ndkVersion rootProject.ext.ndkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig { applicationId 'local.r2controller'; minSdk rootProject.ext.minSdkVersion; targetSdk rootProject.ext.targetSdkVersion; versionCode 15; versionName '0.1.0'; manifestPlaceholders = [usesCleartextTraffic: 'false'] }
+    buildFeatures { buildConfig true }
+    sourceSets.main.assets.srcDirs = [layout.buildDirectory.dir("generated/hudAssets")]
+    buildTypes {
+        debug { manifestPlaceholders = [usesCleartextTraffic: 'true'] }
+        offline {
+            initWith debug
+            debuggable false
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['release']
+            manifestPlaceholders = [usesCleartextTraffic: 'false']
+        }
+    }
+}
+dependencies { implementation('com.facebook.react:react-android'); implementation('com.facebook.react:hermes-android'); implementation('androidx.core:core:1.19.1'); implementation('androidx.activity:activity:1.13.0'); implementation('androidx.appcompat:appcompat:1.8.0') }
+
+tasks.register('copyHudFonts', Sync) {
+ from('src/main/assets') { exclude 'fonts/Inter.ttf', 'fonts/JetBrainsMono.ttf', 'fonts/Rajdhani-SemiBold.ttf' }
+ from('../../app/theme/fonts') { include '*.ttf'; into 'fonts' }
+ into(layout.buildDirectory.dir('generated/hudAssets'))
+}
+tasks.named('preBuild').configure { dependsOn 'copyHudFonts' }
+// Shared UI/core live outside Metro's Android root. Gradle must invalidate the
+// embedded bundle when they change, not reuse an older APK UI.
+tasks.matching { it.name.startsWith('createBundle') && it.name.endsWith('JsAndAssets') }.configureEach {
+ inputs.files(fileTree('../../app') { exclude '**/*.test.*' }, fileTree('../../core') { exclude '**/*.test.*' }, fileTree('../../web') { exclude 'node_modules/**', 'dist/**', '**/*.test.*', 'tests/**' })
+}
+
+// Deprecated app APIs are a build failure, not a suppressed warning.
+tasks.withType(JavaCompile).configureEach {
+ options.compilerArgs.addAll(['-Xlint:deprecation', '-Werror'])
+}
+
+// RN's shipped AAR still uses defaultDisplay/getRealMetrics in this active path.
+// This narrow build-time substitution preserves the dependency method contract. Upgrade
+// review must retain the pinned version and the executable visitor regression.
+androidComponents {
+ onVariants(selector().all()) { variant ->
+  variant.instrumentation.transformClassesWith(ModernDependencyFactory, com.android.build.api.instrumentation.InstrumentationScope.ALL) { }
+  variant.instrumentation.setAsmFramesComputationMode(com.android.build.api.instrumentation.FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS)
+ }
+}
+
+android { testOptions { unitTests.includeAndroidResources = true } }
+dependencies { testImplementation 'junit:junit:4.13.2'; testImplementation 'org.robolectric:robolectric:4.18.1' }
+
+// API availability is a release-blocking check, including standalone builds.
+android { lint { fatal 'NewApi'; abortOnError true } }
+tasks.register('verifyApiPolicy', Exec) {
+ workingDir rootProject.projectDir
+ commandLine 'node', 'scripts/verify-api-policy.cjs'
+ inputs.files('../scripts/verify-api-policy.cjs', '../build.gradle', '../node_modules/react-native/package.json')
+}
+tasks.named('preBuild').configure { dependsOn 'verifyApiPolicy' }
+
+// The offline variant inherits debug configuration; require full lint explicitly.
+tasks.matching { it.name == 'assembleOffline' }.configureEach { dependsOn 'lintOffline' }
+
+// Framework regression sources are supplied by the separate validation repository.
+if (project.hasProperty('controllerRegressionTests')) {
+ android.sourceSets.test.java.srcDirs = [project.property('controllerRegressionTests')]
+}

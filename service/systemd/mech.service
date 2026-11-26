@@ -1,0 +1,26 @@
+[Unit]
+Description=Mech local droid API and Bluetooth owner
+Wants=network-online.target
+After=network-online.target bluetooth.service
+Requires=bluetooth.service
+
+[Service]
+Type=simple
+User=mech
+Group=mech
+SupplementaryGroups=bluetooth
+WorkingDirectory=/opt/mech
+ExecStart=/usr/bin/node --experimental-strip-types /opt/mech/service/main.ts /etc/mech/service.json
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+StateDirectory=mech
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/mech
+
+[Install]
+WantedBy=multi-user.target

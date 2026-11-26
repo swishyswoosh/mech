@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "types": [
+      "react"
+    ],
+    "paths": {
+      "react": [
+        "./node_modules/@types/react"
+      ],
+      "react-native": [
+        "./node_modules/react-native/types_generated/index.d.ts"
+      ],
+      "react/jsx-runtime": [
+        "./node_modules/@types/react/jsx-runtime"
+      ],
+      "react-native-svg": [
+        "./node_modules/react-native-svg"
+      ]
+    }
+  },
+  "include": [
+    "src/App.tsx",
+    "src/transport.ts",
+    "../core/*.ts",
+    "../core/transports/androidCore.ts",
+    "../core/transports/base64.ts",
+    "../core/transports/manualDemand.ts",
+    "../app/**/*.ts",
+    "../app/**/*.tsx"
+  ],
+  "exclude": [
+    "../core/**/*.test.ts",
+    "../app/**/*.test.ts"
+  ]
+}

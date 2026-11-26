@@ -1,0 +1,11 @@
+plugins { id 'groovy' }
+repositories { google(); mavenCentral() }
+dependencies {
+ implementation localGroovy()
+ implementation gradleApi()
+ implementation 'com.android.tools.build:gradle:9.5.2'
+ testImplementation 'junit:junit:4.13.2'
+}
+test { useJUnit() }
+
+sourceSets.test.groovy.srcDirs = ['../../test/android/buildsrc']

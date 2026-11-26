@@ -1,0 +1,35 @@
+node_modules/
+build/
+dist/
+.gradle/
+.cxx/
+.kotlin/
+__pycache__/
+.venv/
+.pytest_cache/
+*.py[cod]
+.DS_Store
+local.properties
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.pem
+*.key
+*.apk
+*.aab
+*.log
+coverage/
+/mockups
+
+# Private local-service configuration and durable state
+service/config.local.json
+service/state/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# Rebuilt for the HACS release; never commit generated controller bundles.
