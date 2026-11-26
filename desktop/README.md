@@ -9,6 +9,8 @@ Use the same Mech web controller on either platform:
 
 ## Windows
 
+> **Untested:** Windows setup has not been tested. Use at your own risk.
+
 Use Windows 10 or 11 with a Bluetooth Low Energy adapter and current Google
 Chrome. Install [Node.js LTS](https://nodejs.org/en/download) (24 or newer),
 using the Windows installer, and [Git for Windows](https://git-scm.com/downloads/win).
@@ -45,7 +47,6 @@ Open the localhost address above rather than an HTML file: Web Bluetooth
 requires a secure context such as localhost or HTTPS.
 
 Chrome documents [Web Bluetooth support on Windows](https://developer.chrome.com/docs/capabilities/bluetooth).
-Mech's Windows connection has not yet been verified on physical hardware.
 
 ## macOS Bluetooth bridge
 
